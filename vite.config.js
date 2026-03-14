@@ -3,10 +3,10 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vite.dev/config/
-export default defineConfig({
-  // This line is the fix for the white screen on GitHub Pages
-  base: '/repo-bago/', 
+export default defineConfig(({ command }) => ({
+  // Use '/repo-bago/' only when building for production (GitHub), 
+  // otherwise use '/' for local development.
+  base: command === 'build' ? '/repo-bago/' : '/', 
   plugins: [
     vue(),
     vueDevTools(),
@@ -16,4 +16,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-})
+}))

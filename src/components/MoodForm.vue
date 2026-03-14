@@ -54,6 +54,12 @@ export default {
       this.history = res.data;
     },
     async submitMood() {
+  
+
+      // --- PART 0.1: LOGGING SETUP ---
+      console.log("User clicked submit button"); 
+      console.log("Mood value entered:", this.mood);
+
       if (!this.name || !this.mood) {
         this.errorMessage = "⚠️ Please fill in all fields.";
         return;
@@ -63,16 +69,19 @@ export default {
       this.aiMessage = '';
 
       try {
-        // Fake 1.5s delay for the "Analyzing" feel
         const [res] = await Promise.all([
           api.post('/api/moods', { full_name: this.name, mood_text: this.mood }),
           new Promise(resolve => setTimeout(resolve, 1500))
         ]);
 
+        // --- PART 0.1: LOGGING STATUS ---
+        console.log("API response status:", res.status);
+
         this.aiMessage = res.data.ai_message;
         await this.fetchHistory();
         this.mood = '';
       } catch (err) {
+        console.error("Caught error:", err);
         this.errorMessage = "❌ Server Error. Is node running?";
       } finally {
         this.loading = false;
@@ -83,27 +92,18 @@ export default {
 </script>
 
 <style scoped>
-.mood-container { max-width: 500px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-   font-family: sans-serif; }
+.mood-container { max-width: 500px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); font-family: sans-serif; }
 .input-field { width: 100%; padding: 12px; margin-bottom: 1rem; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; }
 .submit-btn { width: 100%; padding: 15px; background: #1a1a1a; color: #fff; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
-
-/* SPINNER */
 .spinner-container { display: flex; align-items: center; justify-content: center; gap: 10px; }
 .spinner { width: 16px; height: 16px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* INSIGHT CARD (HIGH CONTRAST) */
-.ai-response-card { margin-top: 2rem; padding: 1.5rem; background: #fff; border-left: 8px solid #42b883; border-radius: 12px; 
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15); border: 1px solid #eee; }
+.ai-response-card { margin-top: 2rem; padding: 1.5rem; background: #fff; border-left: 8px solid #42b883; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border: 1px solid #eee; }
 .ai-text-content { color: #1a1a1a; font-size: 1.2rem; font-weight: 700; }
 .card-tag { color: #42b883; font-weight: 800; font-size: 0.8rem; margin-bottom: 5px; }
-
-/* HISTORY */
 .history-card { background: #f9f9f9; padding: 1rem; border-radius: 10px; margin-top: 1rem; border: 1px solid #eee; }
 .history-reply { color: #42b883; font-size: 0.9rem; margin-top: 5px; border-top: 1px solid #eee; padding-top: 5px; }
 .error-banner { color: #e53e3e; background: #fff5f5; padding: 10px; border-radius: 8px; text-align: center; }
-
 .pop-enter-active { transition: all 0.3s ease; }
 .pop-enter-from { opacity: 0; transform: scale(0.9); }
 </style>
